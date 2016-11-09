@@ -36,7 +36,7 @@ define([
 
     "BootstrapBadge/lib/jquery-1.11.2",
     "dojo/text!BootstrapBadge/widget/template/BootstrapBadge.html"
-], function (declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, _jQuery, widgetTemplate) {
+], function(declare, _WidgetBase, _TemplatedMixin, dom, dojoDom, dojoProp, dojoGeometry, dojoClass, dojoStyle, dojoConstruct, dojoArray, dojoLang, dojoText, dojoHtml, dojoEvent, _jQuery, widgetTemplate) {
     "use strict";
 
     var $ = _jQuery.noConflict(true);
@@ -62,13 +62,13 @@ define([
         _contextObj: null,
 
         // dojo.declare.constructor is called to construct the widget instance. Implement to initialize non-primitive properties.
-        constructor: function () {
+        constructor: function() {
             logger.debug(this.id + ".constructor");
             this._handles = [];
         },
 
         // dijit._WidgetBase.postCreate is called after constructing the widget. Implement to do extra setup work.
-        postCreate: function () {
+        postCreate: function() {
             logger.debug(this.id + ".postCreate");
             if (this.classBar !== "none") {
                 dojoClass.add(this.badge, "BootstrapBadge" + this.classBar);
@@ -78,7 +78,7 @@ define([
         },
 
         // mxui.widget._WidgetBase.update is called when context is changed or initialized. Implement to re-render and / or fetch data.
-        update: function (obj, callback) {
+        update: function(obj, callback) {
             logger.debug(this.id + ".update");
             this._contextObj = obj;
             this._resetSubscriptions();
@@ -89,21 +89,17 @@ define([
             // We're passing the callback to updateRendering to be called after DOM-manipulation
         },
 
-        _setBadge: function (object) {
-            if (this.setBadge) {
-                dojoHtml.set(this.setBadge, "5");
-                return true;
-            }
-            return false;
+        _setBadge: function(object) {
+            dojoHtml.set(this.buttonNode, this._contextObj.get(this.badgeItemsAtt));
         },
 
-        _setClassBar: function (object) {
+        _setClassBar: function(object) {
             var buttonType = "btn btn-";
             dojoClass.add(this.buttonNode, buttonType + this.classBar);
         },
 
         // We want to stop events on a mobile device
-        _stopBubblingEventOnMobile: function (e) {
+        _stopBubblingEventOnMobile: function(e) {
             logger.debug(this.id + "._stopBubblingEventOnMobile");
             if (typeof document.ontouchstart !== "undefined") {
                 dojoEvent.stop(e);
@@ -111,9 +107,9 @@ define([
         },
 
         // Attach events to HTML dom elements
-        _setupEvents: function () {
+        _setupEvents: function() {
             logger.debug(this.id + "._setupEvents");
-            this.connect(this.badgeNode, "click", function (e) {
+            this.connect(this.badgeNode, "click", function(e) {
                 // Only on mobile stop event bubbling!
                 this._stopBubblingEventOnMobile(e);
 
@@ -125,11 +121,11 @@ define([
                             actionname: this.onclickMf,
                             guids: [this._contextObj.getGuid()]
                         },
-                        store: { caller: this.mxform },
-                        callback: function (obj) {
+                        store: { caller: this.mxformts },
+                        callback: function(obj) {
                             // TODO what to do when all is ok!
                         },
-                        error: dojoLang.hitch(this, function (error) {
+                        error: dojoLang.hitch(this, function(error) {
                             logger.error(this.id + ": An error occurred while executing microflow: " + error.description);
                             mx.ui.error("Error while executing MicroFlow: " + this.onclickMf + " : " + error.message);
                         })
@@ -139,7 +135,8 @@ define([
         },
 
         // Rerender the interface.
-        _updateRendering: function (callback) {
+        _updateRendering: function(callback) {
+            this._setBadge(this._contextObj);
             logger.debug(this.id + "._updateRendering");
             //  this._setClassBar(this._contextObj);
 
@@ -148,9 +145,9 @@ define([
             mendix.lang.nullExec(callback);
         },
 
-        _unsubscribe: function () {
+        _unsubscribe: function() {
             if (this._handles) {
-                dojoArray.forEach(this._handles, function (handle) {
+                dojoArray.forEach(this._handles, function(handle) {
                     mx.data.unsubscribe(handle);
                 });
                 this._handles = [];
@@ -158,7 +155,7 @@ define([
         },
 
         // Reset subscriptions.
-        _resetSubscriptions: function () {
+        _resetSubscriptions: function() {
             logger.debug(this.id + "._resetSubscriptions");
             // Release handles on previous object, if any.
             this._unsubscribe();
@@ -167,18 +164,20 @@ define([
             if (this._contextObj) {
                 var objectHandle = mx.data.subscribe({
                     guid: this._contextObj.getGuid(),
-                    callback: dojoLang.hitch(this, function (guid) {
+                    callback: dojoLang.hitch(this, function(guid) {
                         this._updateRendering();
                     })
                 });
 
-                var validationHandle = mx.data.subscribe({
+                var attrHandle = mx.data.subscribe({
                     guid: this._contextObj.getGuid(),
-                    val: true,
-                    callback: dojoLang.hitch(this, this._handleValidation)
+                    attr: this.badgeItemsAtt,
+                    callback: dojoLang.hitch(this, function(guid) {
+                        this._updateRendering();
+                    })
                 });
 
-                this._handles = [objectHandle, validationHandle];
+                this._handles = [objectHandle, attrHandle];
             }
         }
     });

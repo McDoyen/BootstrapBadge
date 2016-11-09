@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8" ?>
+<widget id="BootstrapBadge.widget.BootstrapBadge" needsEntityContext="true" xmlns="http://www.mendix.com/widget/1.0/">
+    <name>BootstrapBadge</name>
+    <description>Shows a summation of elements or items</description>
+<properties>
+        <property key="badgeItemsAtt" type="attribute">
+            <caption>Badge Items</caption>
+            <category>Data source</category>
+            <description>The attribute that contains the number of badge items.</description>
+            <attributeTypes>
+                <attributeType name="Integer"/>
+                <attributeType name="Float"/>
+            </attributeTypes>
+        </property>
+        <property key="badgeStyleAtt" type="attribute" required="false">
+            <caption>Badge Style</caption>
+            <category>Data source</category>
+            <description>Value of attribute should be: default, primary, success, info, warning, danger. Alternatively use the 'Class bar' property set styling</description>
+            <attributeTypes>
+                <attributeType name="Enum"/>
+                <attributeType name="String"/>
+            </attributeTypes>
+        </property>
+        <property key="onclickMf" type="microflow" required="false" >
+            <caption>Click MicroFlow</caption>
+            <category>Behaviour</category>
+            <description>If set the MF will be called on click on the Progress Bar</description>
+            <returnType type="Void"/>
+        </property>
+        <property key="classBar" type="enumeration" required="true" defaultValue="default">
+            <caption>Progress bar style</caption>
+            <category>Display</category>
+            <description>The styling and color of the progress bar using Bootstrap classes.</description>
+            <enumerationValues>
+                <enumerationValue key="default">Default</enumerationValue>
+                <enumerationValue key="primary">Primary</enumerationValue>
+                <enumerationValue key="success">Success</enumerationValue>
+                <enumerationValue key="info">Info</enumerationValue>
+                <enumerationValue key="warning">Warning</enumerationValue>
+                <enumerationValue key="danger">Danger</enumerationValue>
+            </enumerationValues>
+        </property>
+         </properties>
+</widget>   
+
